@@ -1,39 +1,40 @@
 import {getCustomRepository, Repository} from "typeorm";
-import SettingsRepository from "../repositories/SettingsRepository";
-import Setting from "../entities/Setting";
+import {SettingsRepository} from "../repositories/SettingsRepository";
+import {Setting} from "../entities/Setting";
+import {IService} from "./IService";
 
 interface ISettingCreate {
     username: string;
     chat: boolean;
 }
 
-class SettingsService {
+class SettingsService implements IService<Setting> {
 
     async findByUsername(username: string) {
-        return await this.settingsRepository().findOne({username});
+        return await this.getRepository().findOne({username});
     }
 
     async list() {
-        return await this.settingsRepository().find();
+        return await this.getRepository().find();
     }
 
     async create({username, chat}: ISettingCreate): Promise<Setting> {
-        const userAlreadyExists = await this.findByUsername(username);
-        if (userAlreadyExists) {
-            throw new Error("User already exists!");
+        const userSettingsExists = await this.findByUsername(username);
+        if (userSettingsExists) {
+            throw new Error("User settings already exists!");
         }
 
-        const setting = this.settingsRepository().create({username, chat});
-        await this.settingsRepository().save(setting);
+        const setting = this.getRepository().create({username, chat});
+        await this.getRepository().save(setting);
 
         console.log(`Successfully created a new Setting: ${setting}`);
 
         return setting
     }
 
-    private settingsRepository(): Repository<Setting> {
+    getRepository(): Repository<Setting> {
         return getCustomRepository(SettingsRepository);
     }
 }
 
-export default SettingsService;
+export {SettingsService};

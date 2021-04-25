@@ -1,5 +1,5 @@
 import {Request, Response} from "express";
-import SettingsService from "../services/SettingsService";
+import {SettingsService} from "../services/SettingsService";
 
 class SettingsController {
 
@@ -22,4 +22,4 @@ class SettingsController {
     }
 }
 
-export default SettingsController;
+export {SettingsController};
